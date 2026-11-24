@@ -1,0 +1,98 @@
+---
+/**
+ * Section sidebar (e.g. /personalgoals). Collapsible groups of links built
+ * with <details>, so they open/close without JavaScript.
+ *
+ * Desktop (lg+): fixed-width column left of the content, sticky under the
+ * navbar and scrollable on its own. Mobile: replaced by a floating, swipeable
+ * page bar at the bottom of the screen (BottomNav).
+ */
+import BottomNav from './BottomNav.astro';
+import { icons } from '../data/icons';
+import type { SidebarSection } from '../data/personalGoals';
+
+interface Props {
+	sections: SidebarSection[];
+	/** Accessible name for the sidebar's <nav>. */
+	label: string;
+	/** Items link to `${basePath}/${slug}`, e.g. "/personalgoals". */
+	basePath: string;
+	/** Slug of the page being viewed; that item is shown as selected. */
+	current?: string;
+}
+
+const { sections, label, basePath, current } = Astro.props;
+
+// Hover and selected background for every sidebar button.
+const hoverBg = 'transition-colors hover:bg-sidebar-hover';
+
+const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-sidebar';
+---
+
+<aside
+	class="hidden bg-sidebar px-4 py-6 text-on-sidebar lg:sticky lg:top-14 lg:block lg:h-[calc(100dvh-3.5rem)] lg:w-64 lg:shrink-0 lg:overflow-y-auto"
+	data-sidebar
+>
+	<nav aria-label={label} class="flex flex-col gap-4">
+		{
+			sections.map((section) => (
+				<details class="group" open={section.open || section.items.some((item) => item.slug === current)}>
+					<summary
+						class={`flex cursor-pointer list-none items-center gap-2 rounded-ui px-2 py-1.5 text-sm font-semibold [&::-webkit-details-marker]:hidden ${hoverBg} ${focusRing}`}
+					>
+						{section.icon && (
+							<svg
+								class="size-4 shrink-0"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+							>
+								<path d={icons[section.icon]} />
+							</svg>
+						)}
+						<span class="flex-1">{section.title}</span>
+						<svg
+							class="size-4 shrink-0 transition-transform duration-300 group-open:rotate-180 motion-reduce:transition-none"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+							aria-hidden="true"
+						>
+							<path d="m6 9 6 6 6-6" />
+						</svg>
+					</summary>
+
+					<ul class="mt-1 flex flex-col gap-0.5 pl-6">
+						{section.items.length === 0 && <li class="px-2 py-1 text-[13px] opacity-60">Coming soon</li>}
+						{section.items.map((item) =>
+							item.comingSoon ? (
+								<li>
+									<span class="block px-2 py-1 text-[13px] opacity-60" aria-disabled="true">
+										{item.label} (coming soon)
+									</span>
+								</li>
+							) : (
+								<li>
+									<a
+										href={`${basePath}/${item.slug}`}
+										class={`block rounded-ui px-2 py-1 text-[13px] aria-[current=page]:bg-sidebar-hover ${hoverBg} ${focusRing}`}
+										aria-current={item.slug === current ? 'page' : undefined}
+									>
+										{item.label}
+									</a>
+								</li>
+							),
+						)}
+					</ul>
+				</details>
+			))
+		}
+	</nav>
+</aside>
+
+<BottomNav sections={sections} label={label} basePath={basePath} current={current} />

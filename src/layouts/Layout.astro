@@ -7,6 +7,7 @@ interface Props {
 }
 
 const { title = 'Finance Site' } = Astro.props;
+const hasSidebar = Astro.slots.has('sidebar');
 ---
 
 <html lang="en">
@@ -20,8 +21,26 @@ const { title = 'Finance Site' } = Astro.props;
 	</head>
 	<body class="min-h-screen">
 		<Navbar />
-		<main>
-			<slot />
-		</main>
+		<!--
+			Pages can pass a sidebar with slot="sidebar". On desktop the sidebar colour
+			frames the content: a thin strip runs along the top and the #efefef content
+			area tucks into it with a rounded corner (outlined in #3f3f46 in dark mode).
+			On mobile the sidebar becomes a floating bar at the bottom of the screen.
+		-->
+		{
+			hasSidebar ? (
+				<div class="lg:flex lg:bg-sidebar">
+					<slot name="sidebar" />
+					<!-- Mobile: plain content area, with room at the bottom for the floating page bar -->
+					<main class="min-h-[calc(100dvh-4rem)] min-w-0 flex-1 bg-content pb-28 lg:mt-2.5 lg:min-h-[calc(100dvh-3.5rem-0.625rem)] lg:rounded-tl-ui lg:pb-0 dark:lg:border-l dark:lg:border-t dark:lg:border-line">
+						<slot />
+					</main>
+				</div>
+			) : (
+				<main>
+					<slot />
+				</main>
+			)
+		}
 	</body>
 </html>

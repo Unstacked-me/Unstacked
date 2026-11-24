@@ -1,0 +1,159 @@
+---
+/**
+ * Floating page bar for mobile (< lg), used in place of the sidebar.
+ *
+ * - One button per page in the section (coming-soon items are left out).
+ * - Swipe sideways to see them all; the current page is scrolled into the middle.
+ * - The line underneath shows how far through the section the current page is,
+ *   and grows from where it was on the previous page.
+ * - With a mouse/trackpad, arrows appear at either end to scroll the strip.
+ */
+import type { SidebarSection } from '../data/personalGoals';
+
+interface Props {
+	sections: SidebarSection[];
+	/** Accessible name, e.g. "Personal goals". */
+	label: string;
+	/** Items link to `${basePath}/${slug}`. */
+	basePath: string;
+	/** Slug of the page being viewed. */
+	current?: string;
+}
+
+const { sections, label, basePath, current } = Astro.props;
+
+const items = sections.flatMap((section) => section.items).filter((item) => !item.comingSoon);
+const index = items.findIndex((item) => item.slug === current); // -1 on the section's landing page
+const step = index + 1;
+const progress = step / items.length;
+
+const arrow =
+	'absolute inset-y-0 z-10 hidden w-9 items-center from-sidebar from-50% to-transparent text-on-sidebar pointer-fine:flex focus-visible:outline-2 focus-visible:outline-on-sidebar';
+---
+
+<nav
+	aria-label={`${label} pages`}
+	class="fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 mx-auto w-[calc(100%-2rem)] max-w-md rounded-ui bg-sidebar p-2.5 text-on-sidebar shadow-[0_4px_16px_rgb(0_0_0/0.25)] lg:hidden dark:border dark:border-line"
+	data-bottom-nav
+	data-progress={progress}
+>
+	<div class="relative">
+		<button
+			type="button"
+			class={`${arrow} left-0 justify-start rounded-l-ui bg-gradient-to-r pl-1`}
+			aria-label="Scroll left"
+			data-scroll="-1"
+		>
+			<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+				<path d="m15 6-6 6 6 6" />
+			</svg>
+		</button>
+
+		<ul
+			class="flex snap-x snap-proximity gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+			data-bottom-scroller
+		>
+			{
+				items.map((item) => (
+					<li class="shrink-0 snap-center">
+						<a
+							href={`${basePath}/${item.slug}`}
+							class="block whitespace-nowrap rounded-ui px-3 py-2.5 text-xs font-semibold transition-colors hover:bg-sidebar-hover aria-[current=page]:bg-sidebar-hover focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-on-sidebar"
+							aria-current={item.slug === current ? 'page' : undefined}
+						>
+							{item.label}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+
+		<button
+			type="button"
+			class={`${arrow} right-0 justify-end rounded-r-ui bg-gradient-to-l pr-1`}
+			aria-label="Scroll right"
+			data-scroll="1"
+		>
+			<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+				<path d="m9 6 6 6-6 6" />
+			</svg>
+		</button>
+	</div>
+
+	<!-- Progress through the section -->
+	<div
+		class="mt-2 h-1 overflow-hidden rounded-full bg-sidebar-hover"
+		role="progressbar"
+		aria-label={`Progress through ${label}`}
+		aria-valuemin="0"
+		aria-valuemax={items.length}
+		aria-valuenow={step}
+		aria-valuetext={step ? `Page ${step} of ${items.length}` : 'Not started'}
+	>
+		<div
+			class="h-full rounded-full bg-gradient-to-r from-brand-deep to-brand transition-[width] duration-500 ease-out motion-reduce:transition-none"
+			style={`width: ${progress * 100}%`}
+			data-progress-fill
+		>
+		</div>
+	</div>
+</nav>
+
+<script>
+	const nav = document.querySelector<HTMLElement>('[data-bottom-nav]');
+	const scroller = nav?.querySelector<HTMLElement>('[data-bottom-scroller]');
+
+	if (nav && scroller) {
+		// Start with the current page in the middle of the strip.
+		const currentItem = scroller.querySelector<HTMLElement>('[aria-current="page"]')?.parentElement;
+		if (currentItem) {
+			scroller.scrollTo({
+				left: currentItem.offsetLeft - (scroller.clientWidth - currentItem.offsetWidth) / 2,
+				behavior: 'instant',
+			});
+		}
+
+		// Grow the progress line from wherever it was on the previous page.
+		const fill = nav.querySelector<HTMLElement>('[data-progress-fill]');
+		const progress = Number(nav.dataset.progress);
+		const KEY = 'bottom-nav-progress';
+		let previous: number | null = null;
+		try {
+			previous = Number(sessionStorage.getItem(KEY) ?? NaN);
+			sessionStorage.setItem(KEY, String(progress));
+		} catch {
+			// Storage unavailable (e.g. private mode) — just show the current value.
+		}
+		if (fill && previous !== null && !Number.isNaN(previous) && previous !== progress) {
+			const transition = fill.style.transition;
+			fill.style.transition = 'none';
+			fill.style.width = `${previous * 100}%`;
+			fill.getBoundingClientRect();
+			fill.style.transition = transition;
+			fill.style.width = `${progress * 100}%`;
+		}
+
+		// Fade whichever edge has more to swipe to, and (mouse/trackpad only) show an arrow there
+		// that scrolls by most of a strip.
+		const arrows = [...nav.querySelectorAll<HTMLButtonElement>('[data-scroll]')];
+		const updateArrows = () => {
+			const max = scroller.scrollWidth - scroller.clientWidth;
+			const moreLeft = scroller.scrollLeft > 2;
+			const moreRight = scroller.scrollLeft < max - 2;
+			for (const button of arrows) {
+				const more = Number(button.dataset.scroll) < 0 ? moreLeft : moreRight;
+				button.style.visibility = more ? '' : 'hidden';
+			}
+			const edge = (more: boolean) => (more ? 'transparent' : '#000');
+			scroller.style.maskImage = `linear-gradient(to right, ${edge(moreLeft)}, #000 24px, #000 calc(100% - 24px), ${edge(moreRight)})`;
+		};
+		for (const button of arrows) {
+			button.addEventListener('click', () => {
+				scroller.scrollBy({ left: Number(button.dataset.scroll) * scroller.clientWidth * 0.7, behavior: 'smooth' });
+			});
+		}
+		scroller.addEventListener('scroll', updateArrows, { passive: true });
+		window.addEventListener('resize', updateArrows);
+		updateArrows();
+	}
+</script>

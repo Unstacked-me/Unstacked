@@ -1,0 +1,9 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Sidebar from '../components/Sidebar.astro';
+import { personalGoalsSidebar } from '../data/personalGoals';
+---
+
+<Layout title="Personal Goals">
+	<Sidebar slot="sidebar" sections={personalGoalsSidebar} label="Personal goals" basePath="/personalgoals" />
+</Layout>

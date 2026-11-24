@@ -1,4 +1,5 @@
 ---
+import { icons, type Icon } from '../data/icons';
 /**
  * Site navbar, built from the desktop and mobile light/dark wireframes.
  * Edit `menus` to change the dropdowns; the links below are placeholders.
@@ -6,23 +7,20 @@
  * Any button with `data-toggle` + `aria-controls` opens/closes the element with
  * that id (adds the `open` class). Only one is open at a time.
  */
-type Icon = 'goals' | 'info' | 'download' | 'article';
-
 interface Menu {
 	label: string;
 	icon: Icon;
-	links: { label: string; href: string }[];
+	/** Plain link (no drop-down). */
+	href?: string;
+	/** Drop-down links (desktop), used when there's no `href`. */
+	links?: { label: string; href: string }[];
 }
 
 const menus: Menu[] = [
 	{
 		label: 'Personal Goals',
 		icon: 'goals',
-		links: [
-			{ label: 'Saving', href: '/goals/saving' },
-			{ label: 'Budgeting', href: '/goals/budgeting' },
-			{ label: 'Paying off debt', href: '/goals/debt' },
-		],
+		href: '/personalgoals',
 	},
 	{
 		label: 'Information',
@@ -51,13 +49,9 @@ const menus: Menu[] = [
 	},
 ];
 
-// SVG path data for the mobile tab icons (24×24, stroked).
-const icons: Record<Icon, string> = {
-	goals: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm7 5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Zm-5 10c.8-2.3 2.7-3.5 5-3.5s4.2 1.2 5 3.5',
-	info: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm7 8v6m0-9.5v.5',
-	download: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Zm0 0v5h5M12 11v6m-3-3 3 3 3-3',
-	article: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Zm0 0v5h5M9 13h6M9 17h6',
-};
+// A link menu is "current" on its own page and everything under it.
+const path = Astro.url.pathname.replace(/\/$/, '');
+const isCurrent = (menu: Menu) => !!menu.href && (path === menu.href || path.startsWith(`${menu.href}/`));
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand';
 
@@ -123,12 +117,16 @@ const menuPanel = `${slidePanel} flex w-max min-w-44 flex-col p-1`;
 			</span>
 			<ul class="flex h-full">
 				{
-					menus.map((menu) => (
+					menus.map((menu) => {
+						const Tab = menu.href ? 'a' : 'button';
+						return (
 						<li>
-							<button
-								type="button"
+							<Tab
+								href={menu.href}
+								type={menu.href ? undefined : 'button'}
 								class={`flex-col gap-0.5 px-[7px] py-1 text-[10px] min-[390px]:px-2 min-[412px]:px-2.5 max-[374px]:px-1 max-[374px]:text-[9px] font-semibold leading-tight whitespace-nowrap text-ink ${mobileItem}`}
-								aria-pressed="false"
+								aria-pressed={menu.href ? undefined : 'false'}
+								aria-current={isCurrent(menu) ? 'page' : undefined}
 								data-tab
 							>
 								<svg
@@ -144,9 +142,10 @@ const menuPanel = `${slidePanel} flex w-max min-w-44 flex-col p-1`;
 									<path d={icons[menu.icon]} />
 								</svg>
 								{menu.label}
-							</button>
+							</Tab>
 						</li>
-					))
+						);
+					})
 				}
 			</ul>
 
@@ -190,7 +189,13 @@ const menuPanel = `${slidePanel} flex w-max min-w-44 flex-col p-1`;
 
 		<ul class="flex items-center gap-2 self-stretch">
 			{
-				menus.map((menu, i) => (
+				menus.map((menu, i) => menu.href ? (
+					<li class="relative flex h-full items-center">
+						<a href={menu.href} class={pill} aria-current={isCurrent(menu) ? 'page' : undefined}>
+							{menu.label}
+						</a>
+					</li>
+				) : (
 					<li class="relative flex h-full items-center">
 						<button type="button" class={pill} aria-expanded="false" aria-controls={`d-menu-${i}`} data-toggle>
 							{menu.label}
@@ -208,7 +213,7 @@ const menuPanel = `${slidePanel} flex w-max min-w-44 flex-col p-1`;
 						<!-- Clipping strip under the navbar (padding leaves room for the shadow) -->
 						<div id={`d-menu-${i}`} class="pointer-events-none absolute -left-6 top-full overflow-hidden px-6 pb-6">
 							<ul class={menuPanel}>
-								{menu.links.map((link) => (
+								{menu.links?.map((link) => (
 									<li>
 										<a href={link.href} class="block rounded-ui px-3 py-2 text-sm text-ink">
 											{link.label}
@@ -348,7 +353,17 @@ const menuPanel = `${slidePanel} flex w-max min-w-44 flex-col p-1`;
 	}
 
 	for (const tab of tabs) {
-		tab.addEventListener('click', () => selectTab(tab === selected ? null : tab));
+		// Link tabs just navigate (the highlight slides to them first); button tabs toggle.
+		tab.addEventListener('click', () => selectTab(tab instanceof HTMLAnchorElement || tab !== selected ? tab : null));
+	}
+
+	// On a section's pages (e.g. /personalgoals/...), start with its tab selected, without animating.
+	const currentTab = tabs.find((t) => t.getAttribute('aria-current') === 'page');
+	if (currentTab && indicator) {
+		indicator.style.transition = 'none';
+		selectTab(currentTab);
+		indicator.getBoundingClientRect();
+		indicator.style.transition = '';
 	}
 
 	// Tab widths change with the viewport (e.g. smaller labels under 375px).

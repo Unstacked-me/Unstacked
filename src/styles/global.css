@@ -20,12 +20,16 @@
 :root {
   --brand: #8d00f2;
   --brand-deep: #10006b; /* end stop of the purple → navy gradient */
+  --accent: #3f0472; /* content headings and buttons */
+  --accent-text: #3f0472; /* headings on the page background */
 
   --bg: #f5f5f5;
   --layer-1: #f5f5f5; /* navbar */
   --layer-2: #ffffff; /* pills, inputs */
   --border: #8d00f2;
   --text: #231f20;
+  --sidebar: #3f3f46;
+  --content: #efefef; /* content area next to a sidebar */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,6 +39,9 @@
     --layer-2: #242424;
     --border: #3f3f46;
     --text: #f5f5f5;
+    --sidebar: #1e1e1e;
+    --content: #121212;
+    --accent-text: #8d00f2;
   }
 }
 
@@ -44,6 +51,9 @@
   --layer-2: #242424;
   --border: #3f3f46;
   --text: #f5f5f5;
+  --sidebar: #1e1e1e;
+  --content: #121212;
+  --accent-text: #8d00f2;
 }
 
 @theme {
@@ -53,11 +63,17 @@
 @theme inline {
   --color-brand: var(--brand);
   --color-brand-deep: var(--brand-deep);
+  --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
   --color-bg: var(--bg);
   --color-layer-1: var(--layer-1);
   --color-layer-2: var(--layer-2);
   --color-line: var(--border);
   --color-ink: var(--text);
+  --color-sidebar: var(--sidebar);
+  --color-content: var(--content);
+  --color-on-sidebar: #f5f5f5;
+  --color-sidebar-hover: #242424; /* sidebar button hover / selected */
 }
 
 /*

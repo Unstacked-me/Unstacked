@@ -1,0 +1,35 @@
+---
+/**
+ * One page per Personal Goals sidebar item: /personalgoals/<slug>.
+ * Placeholder for now (sidebar only, empty content); give a topic its own
+ * content by adding src/pages/personalgoals/<slug>.astro, which takes priority.
+ */
+import Layout from '../../layouts/Layout.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { personalGoalsSidebar } from '../../data/personalGoals';
+
+export function getStaticPaths() {
+	// Topics that already have their own page file (e.g. budgeting.astro) are skipped here.
+	const ownPages = Object.keys(import.meta.glob('./*.astro'))
+		.map((file) => file.replace(/^\.\/(.*)\.astro$/, '$1'))
+		.filter((name) => !name.startsWith('['));
+
+	return personalGoalsSidebar
+		.flatMap((section) => section.items)
+		.filter((item) => !item.comingSoon && !ownPages.includes(item.slug))
+		.map((item) => ({ params: { slug: item.slug }, props: { label: item.label } }));
+}
+
+const { slug } = Astro.params;
+const { label } = Astro.props;
+---
+
+<Layout title={`${label} · Personal Goals`}>
+	<Sidebar
+		slot="sidebar"
+		sections={personalGoalsSidebar}
+		label="Personal goals"
+		basePath="/personalgoals"
+		current={slug}
+	/>
+</Layout>
