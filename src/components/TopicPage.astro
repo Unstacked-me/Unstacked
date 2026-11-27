@@ -1,0 +1,28 @@
+---
+/**
+ * Shared frame for an Unstack Me topic page: page title, sidebar (with this
+ * topic selected), and the content column with the centred accent heading.
+ * Put the page's content in the default slot.
+ */
+import Layout from '../layouts/Layout.astro';
+import Sidebar from './Sidebar.astro';
+import { unstackMeSidebar } from '../data/unstackMe';
+
+interface Props {
+	/** Heading shown on the page (also used in the browser tab title). */
+	title: string;
+	/** This topic's slug, e.g. "emergency-buffer", so the sidebar can highlight it. */
+	slug: string;
+}
+
+const { title, slug } = Astro.props;
+---
+
+<Layout title={`${title} · Unstack Me`}>
+	<Sidebar slot="sidebar" sections={unstackMeSidebar} label="Unstack Me" basePath="/unstackme" current={slug} />
+
+	<article class="mx-auto max-w-3xl px-6 py-10 text-[15px] font-medium leading-snug text-ink">
+		<h1 class="mb-8 text-center text-3xl font-normal text-accent-text">{title}</h1>
+		<slot />
+	</article>
+</Layout>

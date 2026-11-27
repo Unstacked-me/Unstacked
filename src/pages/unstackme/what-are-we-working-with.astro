@@ -4,9 +4,7 @@
  * wireframe: intro copy, CSV upload, and part 1 of the income form.
  * Nothing here is saved or sent anywhere; the file picker only reads the name.
  */
-import Layout from '../../layouts/Layout.astro';
-import Sidebar from '../../components/Sidebar.astro';
-import { unstackMeSidebar } from '../../data/unstackMe';
+import TopicPage from '../../components/TopicPage.astro';
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
 
@@ -30,113 +28,101 @@ const incomeFields = [
 ];
 ---
 
-<Layout title="What are we working with? · Unstack Me">
-	<Sidebar
-		slot="sidebar"
-		sections={unstackMeSidebar}
-		label="Unstack Me"
-		basePath="/unstackme"
-		current="what-are-we-working-with"
-	/>
-
-	<article class="mx-auto max-w-3xl px-6 py-10 text-[15px] font-medium leading-snug text-ink">
-		<h1 class="mb-8 text-center text-3xl font-normal text-accent-text">What are we working with?</h1>
-
-		<div class="space-y-5">
-			<p>
-				Before looking at what you want to achieve financially, whether that be buying your first home, getting out of
-				debt, or starting an investment portfolio, you first need to know what you are working with.
-			</p>
-			<p>
-				This means having an accurate picture of your finances – what comes in each month vs what goes out. To do this,
-				you can fill out our guided webform and download a free CSV containing that information.
-			</p>
-		</div>
-
-		<!-- Upload CSV: reads the chosen file's name only -->
-		<div class="my-7 flex flex-col items-center gap-2">
-			<label class={`${button} cursor-pointer focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent`}>
-				Upload CSV
-				<svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-					<path d="M12 15V4m-4 4 4-4 4 4M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3" />
-				</svg>
-				<input type="file" accept=".csv,text/csv" class="sr-only" data-csv-input />
-			</label>
-			<p class="text-xs text-ink/70" aria-live="polite" data-csv-name></p>
-		</div>
-
-		<div class="space-y-5">
-			<p>
-				This CSV can be uploaded to see a visual representation of your current finances. It will also significantly
-				enhance your future steps in Unstack Me.
-			</p>
-			<p>Remember – whatever the numbers say, this is just your starting point.</p>
-		</div>
-
-		<!-- Guided webform, part 1 -->
-		<form class="relative my-8 flex overflow-hidden rounded-ui border border-ink/15 bg-white dark:border-line dark:bg-layer-2" data-income-form>
-			<div class="flex flex-1 flex-col gap-4 p-6 text-sm">
-				<h2 class="text-lg font-semibold text-accent-text">Income (Part 1)</h2>
-
-				<fieldset>
-					<legend class="mb-2 font-semibold">Pay intervals</legend>
-					<div class="grid max-w-xs grid-cols-2 gap-x-6 gap-y-2">
-						{
-							intervals.map((interval) => (
-								<label class="flex items-center gap-2">
-									<input type="radio" name="pay-interval" value={interval.value} checked={interval.checked} class="size-4 accent-accent" />
-									{interval.label}
-								</label>
-							))
-						}
-					</div>
-				</fieldset>
-
-				{
-					incomeFields.map((input) => (
-						<div class="max-w-xs">
-							<label for={input.id} class="mb-1.5 block font-semibold">
-								{input.label}
-							</label>
-							<div class="relative">
-								<span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-ink/60">£</span>
-								<input id={input.id} name={input.id} type="number" inputmode="decimal" min="0" step="0.01" class={`${field} pl-7`} />
-							</div>
-						</div>
-					))
-				}
-
-				<div class="mt-2 flex justify-between gap-3">
-					<button type="button" class={button} disabled>Back</button>
-					<!-- Desktop: sits over the bottom-right of the pattern panel -->
-					<button type="button" class={`${button} lg:absolute lg:bottom-6 lg:right-6 lg:z-10`}>Next</button>
-				</div>
-			</div>
-
-			<!-- Decorative pattern panel (desktop only), filling the right half of the card -->
-			<div class="hidden w-1/2 shrink-0 text-ink/25 lg:block dark:text-on-sidebar/15" aria-hidden="true">
-				<svg class="size-full" preserveAspectRatio="xMidYMid slice">
-					<defs>
-						<!-- Domes sitting on each row, with upside-down domes hanging between them -->
-						<pattern id="arc-pattern" width="96" height="96" patternUnits="userSpaceOnUse">
-							<g fill="none" stroke="currentColor" stroke-width="22">
-								<path d="M15 96a33 33 0 0 1 66 0" />
-								<path d="M-33 0a33 33 0 0 0 66 0" />
-								<path d="M63 0a33 33 0 0 0 66 0" />
-							</g>
-						</pattern>
-					</defs>
-					<rect width="100%" height="100%" fill="url(#arc-pattern)" />
-				</svg>
-			</div>
-		</form>
-
+<TopicPage title="What are we working with?" slug="what-are-we-working-with">
+	<div class="space-y-5">
 		<p>
-			Note: We will NOT save any of your data. This means that the CSV will need to be reuploaded every time you visit
-			this site.
+			Before looking at what you want to achieve financially, whether that be buying your first home, getting out of
+			debt, or starting an investment portfolio, you first need to know what you are working with.
 		</p>
-	</article>
-</Layout>
+		<p>
+			This means having an accurate picture of your finances – what comes in each month vs what goes out. To do this,
+			you can fill out our guided webform and download a free CSV containing that information.
+		</p>
+	</div>
+
+	<!-- Upload CSV: reads the chosen file's name only -->
+	<div class="my-7 flex flex-col items-center gap-2">
+		<label class={`${button} cursor-pointer focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent`}>
+			Upload CSV
+			<svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<path d="M12 15V4m-4 4 4-4 4 4M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3" />
+			</svg>
+			<input type="file" accept=".csv,text/csv" class="sr-only" data-csv-input />
+		</label>
+		<p class="text-xs text-ink/70" aria-live="polite" data-csv-name></p>
+	</div>
+
+	<div class="space-y-5">
+		<p>
+			This CSV can be uploaded to see a visual representation of your current finances. It will also significantly
+			enhance your future steps in Unstack Me.
+		</p>
+		<p>Remember – whatever the numbers say, this is just your starting point.</p>
+	</div>
+
+	<!-- Guided webform, part 1 -->
+	<form class="relative my-8 flex overflow-hidden rounded-ui border border-ink/15 bg-white dark:border-line dark:bg-layer-2" data-income-form>
+		<div class="flex flex-1 flex-col gap-4 p-6 text-sm">
+			<h2 class="text-lg font-semibold text-accent-text">Income (Part 1)</h2>
+
+			<fieldset>
+				<legend class="mb-2 font-semibold">Pay intervals</legend>
+				<div class="grid max-w-xs grid-cols-2 gap-x-6 gap-y-2">
+					{
+						intervals.map((interval) => (
+							<label class="flex items-center gap-2">
+								<input type="radio" name="pay-interval" value={interval.value} checked={interval.checked} class="size-4 accent-accent" />
+								{interval.label}
+							</label>
+						))
+					}
+				</div>
+			</fieldset>
+
+			{
+				incomeFields.map((input) => (
+					<div class="max-w-xs">
+						<label for={input.id} class="mb-1.5 block font-semibold">
+							{input.label}
+						</label>
+						<div class="relative">
+							<span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-ink/60">£</span>
+							<input id={input.id} name={input.id} type="number" inputmode="decimal" min="0" step="0.01" class={`${field} pl-7`} />
+						</div>
+					</div>
+				))
+			}
+
+			<div class="mt-2 flex justify-between gap-3">
+				<button type="button" class={button} disabled>Back</button>
+				<!-- Desktop: sits over the bottom-right of the pattern panel -->
+				<button type="button" class={`${button} lg:absolute lg:bottom-6 lg:right-6 lg:z-10`}>Next</button>
+			</div>
+		</div>
+
+		<!-- Decorative pattern panel (desktop only), filling the right half of the card -->
+		<div class="hidden w-1/2 shrink-0 text-ink/25 lg:block dark:text-on-sidebar/15" aria-hidden="true">
+			<svg class="size-full" preserveAspectRatio="xMidYMid slice">
+				<defs>
+					<!-- Domes sitting on each row, with upside-down domes hanging between them -->
+					<pattern id="arc-pattern" width="96" height="96" patternUnits="userSpaceOnUse">
+						<g fill="none" stroke="currentColor" stroke-width="22">
+							<path d="M15 96a33 33 0 0 1 66 0" />
+							<path d="M-33 0a33 33 0 0 0 66 0" />
+							<path d="M63 0a33 33 0 0 0 66 0" />
+						</g>
+					</pattern>
+				</defs>
+				<rect width="100%" height="100%" fill="url(#arc-pattern)" />
+			</svg>
+		</div>
+	</form>
+
+	<p>
+		Note: We will NOT save any of your data. This means that the CSV will need to be reuploaded every time you visit
+		this site.
+	</p>
+</TopicPage>
 
 <script>
 	// Show the chosen file's name next to the Upload CSV button (nothing is uploaded or stored).

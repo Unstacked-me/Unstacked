@@ -1,0 +1,101 @@
+---
+/**
+ * One question/answer in an accordion. Built on <details>, so it still opens
+ * without JavaScript and works with the keyboard; the script below adds a
+ * smooth slide open/closed in every browser. Put the answer in the default slot.
+ *
+ * <AccordionItem question="What is an emergency buffer for?">
+ *   <p>…</p>
+ * </AccordionItem>
+ */
+interface Props {
+	question: string;
+	/** Start opened. */
+	open?: boolean;
+}
+
+const { question, open = false } = Astro.props;
+---
+
+<details
+	class:list={[
+		'group rounded-ui border border-ink/15 bg-white dark:border-line dark:bg-layer-2',
+		{ 'is-open': open },
+	]}
+	open={open}
+	data-accordion
+>
+	<summary
+		class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-ui px-5 py-4 font-bold [&::-webkit-details-marker]:hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+	>
+		{question}
+		<svg
+			class="size-5 shrink-0 text-accent-text transition-transform duration-300 group-[.is-open]:rotate-180 motion-reduce:transition-none"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2.5"
+			aria-hidden="true"
+		>
+			<path d="m6 9 6 6 6-6" />
+		</svg>
+	</summary>
+	<div class="overflow-hidden" data-accordion-content>
+		<div class="space-y-4 px-5 pb-5">
+			<slot />
+		</div>
+	</div>
+</details>
+
+<script>
+	const DURATION = 300;
+	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	for (const details of document.querySelectorAll<HTMLDetailsElement>('[data-accordion]')) {
+		const summary = details.querySelector('summary')!;
+		const content = details.querySelector<HTMLElement>('[data-accordion-content]')!;
+		let animation: Animation | null = null;
+
+		// Slide the answer's height from → to, then tidy up.
+		const slide = (from: number, to: number, done?: () => void) => {
+			animation?.cancel();
+			const current = content.animate(
+				{ height: [`${from}px`, `${to}px`] },
+				// When closing, hold at 0 until the panel is actually shut (avoids a one-frame flash).
+				{ duration: DURATION, easing: 'ease-out', fill: to === 0 ? 'forwards' : 'none' },
+			);
+			animation = current;
+			current.onfinish = () => {
+				if (animation === current) animation = null;
+				done?.();
+				current.cancel();
+			};
+		};
+
+		summary.addEventListener('click', (event) => {
+			event.preventDefault();
+			// Start from wherever it is right now (0 if fully closed), so a quick double-click reverses smoothly.
+			const current = details.open ? content.getBoundingClientRect().height : 0;
+
+			if (!details.classList.contains('is-open')) {
+				details.classList.add('is-open'); // chevron flips straight away
+				details.open = true;
+				if (reduceMotion.matches) return;
+				animation?.cancel();
+				slide(current, content.scrollHeight);
+			} else {
+				details.classList.remove('is-open');
+				if (reduceMotion.matches) {
+					details.open = false;
+					return;
+				}
+				slide(current, 0, () => (details.open = false));
+			}
+		});
+
+		// Keep the chevron right if something else opens it (e.g. the browser's find-in-page).
+		details.addEventListener('toggle', () => {
+			if (!animation) details.classList.toggle('is-open', details.open);
+		});
+	}
+</script>

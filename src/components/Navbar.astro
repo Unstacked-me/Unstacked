@@ -65,16 +65,19 @@ const mobileItem =
 	'group relative flex h-full items-center justify-center rounded-ui-inner transition-colors duration-300 data-active:text-white focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand';
 
 // Panels that slide out from under the navbar (mobile search, desktop drop-downs).
-// Brand gradient at 20% over #f5f5f5 in light mode, layer 2 in dark; no border, soft shadow.
-// Each sits in a clipping strip just below the navbar and slides down when `.open` is set on the strip.
-// Opening shows it instantly (so focus can move into it); closing keeps it visible until the slide finishes.
-const slidePanel = `pointer-events-auto invisible -translate-y-full rounded-b-ui bg-layer-1 bg-gradient-to-r from-brand/20 to-brand-deep/20 ${softShadow} dark:bg-layer-2 dark:from-layer-2 dark:to-layer-2 transition-[translate,visibility] duration-300 ease-out motion-reduce:transition-none [.open>&]:visible [.open>&]:translate-y-0 [.open>&]:transition-[translate]`;
+// No border, soft shadow. Each sits in a clipping strip just below the navbar and slides
+// down when `.open` is set on the strip. Opening shows it instantly (so focus can move
+// into it); closing keeps it visible until the slide finishes.
+const slidePanel = `pointer-events-auto invisible -translate-y-full rounded-b-ui ${softShadow} transition-[translate,visibility] duration-300 ease-out motion-reduce:transition-none [.open>&]:visible [.open>&]:translate-y-0 [.open>&]:transition-[translate]`;
+
+// Brand gradient at 20% over #f5f5f5 in light mode, layer 2 (#242424) in dark.
+const brandTint = 'bg-layer-1 bg-gradient-to-r from-brand/20 to-brand-deep/20 dark:bg-layer-2 dark:from-layer-2 dark:to-layer-2';
 
 // Search drop-down on mobile: under the whole nav bar, 80% wide.
-const searchPanel = `${slidePanel} mx-auto w-4/5 p-3`;
+const searchPanel = `${slidePanel} ${brandTint} mx-auto w-4/5 p-3`;
 
 // Desktop menu drop-down, under its button.
-const menuPanel = `${slidePanel} flex w-max min-w-44 flex-col p-1`;
+const menuPanel = `${slidePanel} ${brandTint} flex w-max min-w-44 flex-col p-1`;
 ---
 
 <header class={`sticky top-0 z-50 bg-layer-1 ${softShadow}`}>
