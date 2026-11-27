@@ -57,6 +57,10 @@
 }
 
 @theme {
+  /* Fonts (loaded in Layout.astro) */
+  --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif; /* everything by default */
+  --font-display: "Fraunces Variable", ui-serif, Georgia, serif; /* `font-display`: big headlines */
+  --font-script: "Kaushan Script", cursive; /* `font-script`: one-off accent words */
   --radius-ui: 10px; /* every rounded corner: `rounded-ui` */
   --radius-ui-inner: 9px; /* `rounded-ui-inner`: things sitting flush inside a 1px-bordered `rounded-ui` box */
 }
