@@ -58,6 +58,7 @@
 
 @theme {
   --radius-ui: 10px; /* every rounded corner: `rounded-ui` */
+  --radius-ui-inner: 9px; /* `rounded-ui-inner`: things sitting flush inside a 1px-bordered `rounded-ui` box */
 }
 
 @theme inline {

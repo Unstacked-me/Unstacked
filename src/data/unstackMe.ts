@@ -16,17 +16,18 @@ export interface SidebarSection {
 	items: SidebarItem[];
 }
 
-/** Sidebar for /personalgoals. Each item links to `#slug` on that page. */
-export const personalGoalsSidebar: SidebarSection[] = [
+/** Sidebar for /unstackme. Each item links to `#slug` on that page. */
+export const unstackMeSidebar: SidebarSection[] = [
 	{
-		title: 'Personal Goals',
+		title: 'Unstack Me',
 		icon: 'goals',
 		open: true,
 		items: [
 			{ label: 'Introduction', slug: 'introduction' },
+			{ label: 'What are your goals?', slug: 'what-are-your-goals' },
+			{ label: 'Overview', slug: 'overview' },
 			{ label: 'What are we working with?', slug: 'what-are-we-working-with' },
 			{ label: 'Budgeting', slug: 'budgeting' },
-			{ label: 'What are your goals?', slug: 'what-are-your-goals' },
 			{ label: 'Priorities', slug: 'priorities' },
 			{ label: 'Emergency buffer', slug: 'emergency-buffer' },
 			{ label: 'Bad debt', slug: 'bad-debt' },

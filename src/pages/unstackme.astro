@@ -1,0 +1,9 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Sidebar from '../components/Sidebar.astro';
+import { unstackMeSidebar } from '../data/unstackMe';
+---
+
+<Layout title="Unstack Me">
+	<Sidebar slot="sidebar" sections={unstackMeSidebar} label="Unstack Me" basePath="/unstackme" />
+</Layout>

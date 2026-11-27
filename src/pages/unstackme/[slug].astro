@@ -1,12 +1,12 @@
 ---
 /**
- * One page per Personal Goals sidebar item: /personalgoals/<slug>.
+ * One page per Unstack Me sidebar item: /unstackme/<slug>.
  * Placeholder for now (sidebar only, empty content); give a topic its own
- * content by adding src/pages/personalgoals/<slug>.astro, which takes priority.
+ * content by adding src/pages/unstackme/<slug>.astro, which takes priority.
  */
 import Layout from '../../layouts/Layout.astro';
 import Sidebar from '../../components/Sidebar.astro';
-import { personalGoalsSidebar } from '../../data/personalGoals';
+import { unstackMeSidebar } from '../../data/unstackMe';
 
 export function getStaticPaths() {
 	// Topics that already have their own page file (e.g. budgeting.astro) are skipped here.
@@ -14,7 +14,7 @@ export function getStaticPaths() {
 		.map((file) => file.replace(/^\.\/(.*)\.astro$/, '$1'))
 		.filter((name) => !name.startsWith('['));
 
-	return personalGoalsSidebar
+	return unstackMeSidebar
 		.flatMap((section) => section.items)
 		.filter((item) => !item.comingSoon && !ownPages.includes(item.slug))
 		.map((item) => ({ params: { slug: item.slug }, props: { label: item.label } }));
@@ -24,12 +24,12 @@ const { slug } = Astro.params;
 const { label } = Astro.props;
 ---
 
-<Layout title={`${label} · Personal Goals`}>
+<Layout title={`${label} · Unstack Me`}>
 	<Sidebar
 		slot="sidebar"
-		sections={personalGoalsSidebar}
-		label="Personal goals"
-		basePath="/personalgoals"
+		sections={unstackMeSidebar}
+		label="Unstack Me"
+		basePath="/unstackme"
 		current={slug}
 	/>
 </Layout>

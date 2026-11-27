@@ -1,6 +1,6 @@
 ---
 /**
- * Section sidebar (e.g. /personalgoals). Collapsible groups of links built
+ * Section sidebar (e.g. /unstackme). Collapsible groups of links built
  * with <details>, so they open/close without JavaScript.
  *
  * Desktop (lg+): fixed-width column left of the content, sticky under the
@@ -9,13 +9,13 @@
  */
 import BottomNav from './BottomNav.astro';
 import { icons } from '../data/icons';
-import type { SidebarSection } from '../data/personalGoals';
+import type { SidebarSection } from '../data/unstackMe';
 
 interface Props {
 	sections: SidebarSection[];
 	/** Accessible name for the sidebar's <nav>. */
 	label: string;
-	/** Items link to `${basePath}/${slug}`, e.g. "/personalgoals". */
+	/** Items link to `${basePath}/${slug}`, e.g. "/unstackme". */
 	basePath: string;
 	/** Slug of the page being viewed; that item is shown as selected. */
 	current?: string;

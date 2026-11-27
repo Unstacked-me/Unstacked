@@ -1,12 +1,12 @@
 ---
 /**
- * /personalgoals/what-are-we-working-with — mock-up of the content from the
+ * /unstackme/what-are-we-working-with — mock-up of the content from the
  * wireframe: intro copy, CSV upload, and part 1 of the income form.
  * Nothing here is saved or sent anywhere; the file picker only reads the name.
  */
 import Layout from '../../layouts/Layout.astro';
 import Sidebar from '../../components/Sidebar.astro';
-import { personalGoalsSidebar } from '../../data/personalGoals';
+import { unstackMeSidebar } from '../../data/unstackMe';
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
 
@@ -30,12 +30,12 @@ const incomeFields = [
 ];
 ---
 
-<Layout title="What are we working with? · Personal Goals">
+<Layout title="What are we working with? · Unstack Me">
 	<Sidebar
 		slot="sidebar"
-		sections={personalGoalsSidebar}
-		label="Personal goals"
-		basePath="/personalgoals"
+		sections={unstackMeSidebar}
+		label="Unstack Me"
+		basePath="/unstackme"
 		current="what-are-we-working-with"
 	/>
 
@@ -68,7 +68,7 @@ const incomeFields = [
 		<div class="space-y-5">
 			<p>
 				This CSV can be uploaded to see a visual representation of your current finances. It will also significantly
-				enhance your future steps in Personal Goals.
+				enhance your future steps in Unstack Me.
 			</p>
 			<p>Remember – whatever the numbers say, this is just your starting point.</p>
 		</div>

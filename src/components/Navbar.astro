@@ -2,7 +2,8 @@
 import { icons, type Icon } from '../data/icons';
 /**
  * Site navbar, built from the desktop and mobile light/dark wireframes.
- * Edit `menus` to change the dropdowns; the links below are placeholders.
+ * Edit `menus` to change the menu items; a menu is either a plain link (`href`)
+ * or, on desktop, a drop-down (`links`).
  *
  * Any button with `data-toggle` + `aria-controls` opens/closes the element with
  * that id (adds the `open` class). Only one is open at a time.
@@ -18,34 +19,26 @@ interface Menu {
 
 const menus: Menu[] = [
 	{
-		label: 'Personal Goals',
+		label: 'Unstack Me',
 		icon: 'goals',
-		href: '/personalgoals',
+		href: '/unstackme',
 	},
+	// Plain links for now (pages not built yet). To bring a drop-down back, swap
+	// `href` for `links: [{ label, href }, …]`; the drop-down code is still below.
 	{
 		label: 'Information',
 		icon: 'info',
-		links: [
-			{ label: 'Guides', href: '/information/guides' },
-			{ label: 'Glossary', href: '/information/glossary' },
-			{ label: 'FAQs', href: '/information/faqs' },
-		],
+		href: '/information',
 	},
 	{
 		label: 'Downloadables',
 		icon: 'download',
-		links: [
-			{ label: 'Templates', href: '/downloads/templates' },
-			{ label: 'Worksheets', href: '/downloads/worksheets' },
-		],
+		href: '/downloadables',
 	},
 	{
 		label: 'Articles',
 		icon: 'article',
-		links: [
-			{ label: 'Latest', href: '/articles' },
-			{ label: 'Popular', href: '/articles/popular' },
-		],
+		href: '/articles',
 	},
 ];
 
@@ -69,7 +62,7 @@ const softShadow = 'shadow-[0_4px_12px_rgb(0_0_0/0.12)] dark:shadow-[0_4px_12px_
 
 // Mobile tab/search button. The item under the sliding highlight (data-active) turns white.
 const mobileItem =
-	'group relative flex h-full items-center justify-center rounded-ui transition-colors duration-300 data-active:text-white focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand';
+	'group relative flex h-full items-center justify-center rounded-ui-inner transition-colors duration-300 data-active:text-white focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand';
 
 // Panels that slide out from under the navbar (mobile search, desktop drop-downs).
 // Brand gradient at 20% over #f5f5f5 in light mode, layer 2 in dark; no border, soft shadow.
@@ -109,7 +102,7 @@ const menuPanel = `${slidePanel} flex w-max min-w-44 flex-col p-1`;
 		<div class={`relative col-span-2 grid h-12 grid-cols-subgrid overflow-hidden rounded-ui border border-gradient-tinted dark:border-line dark:bg-none dark:bg-layer-2`}>
 			<!-- Sliding highlight: moved under the selected tab (or the search button while search is open) by the script below -->
 			<span
-				class="pointer-events-none absolute inset-y-0 left-0 isolate overflow-hidden rounded-ui opacity-0 transition-[translate,width,opacity] duration-300 ease-out motion-reduce:transition-none dark:bg-line"
+				class="pointer-events-none absolute inset-y-0 left-0 isolate overflow-hidden rounded-ui-inner opacity-0 transition-[translate,width,opacity] duration-300 ease-out motion-reduce:transition-none dark:bg-line"
 				aria-hidden="true"
 				data-tab-indicator
 			>
@@ -357,7 +350,7 @@ const menuPanel = `${slidePanel} flex w-max min-w-44 flex-col p-1`;
 		tab.addEventListener('click', () => selectTab(tab instanceof HTMLAnchorElement || tab !== selected ? tab : null));
 	}
 
-	// On a section's pages (e.g. /personalgoals/...), start with its tab selected, without animating.
+	// On a section's pages (e.g. /unstackme/...), start with its tab selected, without animating.
 	const currentTab = tabs.find((t) => t.getAttribute('aria-current') === 'page');
 	if (currentTab && indicator) {
 		indicator.style.transition = 'none';

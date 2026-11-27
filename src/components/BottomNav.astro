@@ -8,11 +8,11 @@
  *   and grows from where it was on the previous page.
  * - With a mouse/trackpad, arrows appear at either end to scroll the strip.
  */
-import type { SidebarSection } from '../data/personalGoals';
+import type { SidebarSection } from '../data/unstackMe';
 
 interface Props {
 	sections: SidebarSection[];
-	/** Accessible name, e.g. "Personal goals". */
+	/** Accessible name, e.g. "Unstack Me". */
 	label: string;
 	/** Items link to `${basePath}/${slug}`. */
 	basePath: string;
